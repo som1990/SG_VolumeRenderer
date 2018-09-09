@@ -20,7 +20,8 @@ namespace vol {
 		float val5 = P->eval(lux::Vector(-1, 0, 1));
 		std::cout << "S: " << val << std::endl;
 		std::cout << "E: " << val2 << std::endl;
+		std::cout << "B: " << val4 << std::endl;
 		std::cin.get();
-		delete S, E;
+		delete S, E, T, B, P;
 	}
 }

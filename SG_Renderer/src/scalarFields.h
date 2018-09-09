@@ -78,7 +78,7 @@ namespace vol {
 		const float eval(const lux::Vector& p) const override
 		{
 			lux::Vector x = p - cen;
-			float val = powf(rad, 2 * q) - powf(x.X(), 2 * q) - powf(x.Y(), 2 * q) - powf(x.Z(), 2 * q);
+			float val = powf(rad, 2.0 * q) - powf(x.X(), 2.0 * q) - powf(x.Y(), 2 * q) - powf(x.Z(), 2 * q);
 			return val;
 		}
 
