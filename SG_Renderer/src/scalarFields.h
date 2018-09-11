@@ -28,7 +28,7 @@ namespace vol {
 	class Elipse : public VolumeField<float>
 	{
 	public:
-		Elipse(lux::Vector center, lux::Vector normal, float radiusMajor, float radiusMinor) :
+		Elipse(lux::Vector& center, lux::Vector& normal, float radiusMajor, float radiusMinor) :
 			cen(center), n(normal), rMajor(radiusMajor), rMinor(radiusMinor) {}
 
 		const float eval(const lux::Vector& p) const override
@@ -50,7 +50,7 @@ namespace vol {
 	class Torus : public VolumeField<float>
 	{
 	public:
-		Torus(lux::Vector center, lux::Vector normal, float radiusMajor, float radiusMinor) :
+		Torus(lux::Vector& center, lux::Vector& normal, float radiusMajor, float radiusMinor) :
 			cen(center), n(normal), rMajor(radiusMajor), rMinor(radiusMinor) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -73,7 +73,7 @@ namespace vol {
 	class Box : public VolumeField<float>
 	{
 	public:
-		Box(lux::Vector center, float radius,  float pNorm) :
+		Box(lux::Vector& center, float radius,  float pNorm) :
 			cen(center), rad(radius), q(pNorm) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -92,7 +92,7 @@ namespace vol {
 	class Plane : public VolumeField<float>
 	{
 	public:
-		Plane(lux::Vector center, lux::Vector normal) :
+		Plane(lux::Vector& center, lux::Vector& normal) :
 			cen(center), n(normal) {} 
 		
 		const float eval(const lux::Vector& p) const override
@@ -109,7 +109,7 @@ namespace vol {
 	class Cone : public VolumeField<float>
 	{
 	public:
-		Cone(lux::Vector center, lux::Vector normal, float height, float maxAngle) :
+		Cone(lux::Vector& center, lux::Vector& normal, float height, float maxAngle) :
 			cen(center), n(normal), h(height), maxTheta(maxAngle) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -138,7 +138,7 @@ namespace vol {
 	class Cylinder : public VolumeField<float>
 	{
 	public:
-		Cylinder(lux::Vector center, lux::Vector normal, float radius) :
+		Cylinder(lux::Vector& center, lux::Vector& normal, float radius) :
 			cen(center), n(normal), rad(radius) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -154,7 +154,7 @@ namespace vol {
 	class Icosahedron : public VolumeField<float>
 	{
 	public:
-		Icosahedron(lux::Vector center, float radius) :
+		Icosahedron(lux::Vector& center, float radius) :
 			cen(center), rad(radius) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -182,7 +182,7 @@ namespace vol {
 	class SteinerPatch : public VolumeField<float>
 	{
 	public:
-		SteinerPatch(lux::Vector center) :
+		SteinerPatch(lux::Vector& center) :
 			cen(center) {}
 		
 		const float eval(const lux::Vector& p) const override
@@ -194,6 +194,90 @@ namespace vol {
 
 	private:
 		lux::Vector cen;
+	};
+
+
+	class ScalarFieldAdd : public VolumeField<float>
+	{
+	public:
+		ScalarFieldAdd(VolumeFloatPtr f, VolumeFloatPtr g):
+			elem1(f),elem2(g){}
+		const float eval(const lux::Vector& p) const override
+		{
+			return elem1->eval(p) + elem2->eval(p);
+		}
+
+	private:
+		VolumeFloatPtr elem1;
+		VolumeFloatPtr elem2;
+	};
+
+	class ScalarFieldMult : public VolumeField<float>
+	{
+	public:
+		ScalarFieldMult(VolumeFloatPtr f, VolumeFloatPtr g):
+			elem1(f), elem2(g) {}
+		const float eval(const lux::Vector& p) const override 
+		{
+			return elem1->eval(p) * elem2->eval(p);
+		}
+	private:
+		VolumeFloatPtr elem1;
+		VolumeFloatPtr elem2;
+	};
+
+	class ScalarFieldDivide : public VolumeField<float>
+	{
+	public:
+		ScalarFieldDivide(VolumeFloatPtr f, VolumeFloatPtr g):
+			elem1(f), elem2(g) {}
+		const float eval(const lux::Vector& p) const override
+		{
+			return elem1->eval(p) / elem2->eval(p);
+		}
+	private:
+		VolumeFloatPtr elem1;
+		VolumeFloatPtr elem2;
+	};
+
+	class ScalarFieldSubtract : public VolumeField<float>
+	{
+	public:
+		ScalarFieldSubtract(VolumeFloatPtr f, VolumeFloatPtr g) :
+			elem1(f), elem2(g) {}
+		const float eval(const lux::Vector& p) const override
+		{
+			return elem1->eval(p) - elem2->eval(p);
+		}
+	private:
+		VolumeFloatPtr elem1;
+		VolumeFloatPtr elem2;
+	};
+	class ScalarFieldMinus : public VolumeField<float>
+	{
+	public:
+		ScalarFieldMinus(VolumeFloatPtr f) :
+			elem1(f) {}
+		const float eval(const lux::Vector& p) const override
+		{
+			return -elem1->eval(p);
+		}
+	private:
+		VolumeFloatPtr elem1;
+		
+	};
+	class ScalarFieldInverse : public VolumeField<float>
+	{
+	public:
+		ScalarFieldInverse(VolumeFloatPtr f):
+			elem1(f){}
+		const float eval(const lux::Vector& p) const override
+		{
+			return (1.0 / elem1->eval(p));
+		}
+
+	private:
+		VolumeFloatPtr elem1;
 	};
 }
 
