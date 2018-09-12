@@ -133,7 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\colorField.h" />
+    <ClInclude Include="src\CSG.h" />
     <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Fields.h" />
     <ClInclude Include="src\luxMath.h" />
     <ClInclude Include="src\matrixField.h" />
     <ClInclude Include="src\scalarFields.h" />

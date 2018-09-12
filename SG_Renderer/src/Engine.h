@@ -1,8 +1,8 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
-#include "scalarFields.h"
 #include "luxMath.h"
-
+#include "Fields.h"
+#include "CSG.h"
 
 namespace vol {
 	void printMessage();

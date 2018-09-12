@@ -7,7 +7,7 @@ namespace vol
 	class ColorFieldAdd : public VolumeField<lux::Color>
 	{
 	public:
-		ColorFieldAdd(const VolumeColorPtr f, const VolumeColorPtr g) :
+		ColorFieldAdd(VolumeColorPtr f, VolumeColorPtr g) :
 			elem1(f), elem2(g) {}
 		const lux::Color eval(const lux::Vector &p) const override
 		{

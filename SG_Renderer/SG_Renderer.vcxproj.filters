@@ -41,5 +41,11 @@
     <ClInclude Include="src\matrixField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Fields.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CSG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

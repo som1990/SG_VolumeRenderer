@@ -23,11 +23,11 @@ namespace vol {
 		VolumeField<float> t2 = ScalarFieldAdd(S,E);
 		//float temp1 = t.eval(lux::Vector(-1, 0, 1));
 		float temp1 = t1.eval(lux::Vector(0, 0, 0));
-		float temp2 = t2.eval(lux::Vector(0, 0, 0));
+		//float temp2 = t2.eval(lux::Vector(0, 0, 0));
 
 		//VolumeField<float>* t = (VolumeField<float>*)S + (VolumeField<float>*)E;
 		std::cout << "S + E: " << temp1 << std::endl;
-		std::cout << "S + E(Method2): " << temp1 << std::endl;
+		//std::cout << "S + E(Method2): " << temp1 << std::endl;
 		std::cout << "S: " << val << std::endl;
 		std::cout << "E: " << val2 << std::endl;
 		std::cout << "B: " << val4 << std::endl;

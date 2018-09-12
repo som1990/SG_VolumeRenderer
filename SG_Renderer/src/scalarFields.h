@@ -203,7 +203,7 @@ namespace vol {
 	class ScalarFieldAdd : public VolumeField<float>
 	{
 	public:
-		ScalarFieldAdd(const VolumeFloatPtr f, const VolumeFloatPtr g):
+		ScalarFieldAdd(VolumeFloatPtr f, VolumeFloatPtr g):
 			elem1(f),elem2(g){}
 		const float eval(const lux::Vector& p) const override
 		{
