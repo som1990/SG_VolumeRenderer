@@ -32,5 +32,11 @@
     <ClInclude Include="src\scalarFields.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\vectorFields.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\colorField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -132,9 +132,11 @@
     <ClCompile Include="src\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\colorField.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\luxMath.h" />
     <ClInclude Include="src\scalarFields.h" />
+    <ClInclude Include="src\vectorFields.h" />
     <ClInclude Include="src\VolumeField.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -35,6 +35,8 @@ namespace vol {
 
 		virtual const volumeDataType eval(const lux::Vector& P) const { volumeDataType base{}; return base; }
 		virtual const volumeGradType grad(const lux::Vector& P) const { volumeGradType base{}; return base; }
+
+		//virtual const volumeDataType operator+(volumeDataType) const{ volumeDataType base{}; return base; }
 	};
 	
 	typedef VolumeField<float>* VolumeFloatPtr;

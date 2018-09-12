@@ -13,11 +13,21 @@ namespace vol {
 		Box *B = new Box(lux::Vector(0, 0, 0), 2, 1.2);
 		Plane *P = new Plane(lux::Vector(0, 0, 0), lux::Vector(0, 1, 0));
 		
-		float val = S->eval(lux::Vector(-1, 0, 1));
-		float val2 = E->eval(lux::Vector(0, 1, 0));
+		float val = S->eval(lux::Vector(0, 0, 0));
+		float val2 = E->eval(lux::Vector(0, 0, 0));
 		float val3 = T->eval(lux::Vector(-1, 0, 1));
 		float val4 = B->eval(lux::Vector(0, 0, 0));
 		float val5 = P->eval(lux::Vector(-1, 0, 1));
+
+		ScalarFieldAdd t1 = *S + *E;
+		VolumeField<float> t2 = ScalarFieldAdd(S,E);
+		//float temp1 = t.eval(lux::Vector(-1, 0, 1));
+		float temp1 = t1.eval(lux::Vector(0, 0, 0));
+		float temp2 = t2.eval(lux::Vector(0, 0, 0));
+
+		//VolumeField<float>* t = (VolumeField<float>*)S + (VolumeField<float>*)E;
+		std::cout << "S + E: " << temp1 << std::endl;
+		std::cout << "S + E(Method2): " << temp1 << std::endl;
 		std::cout << "S: " << val << std::endl;
 		std::cout << "E: " << val2 << std::endl;
 		std::cout << "B: " << val4 << std::endl;

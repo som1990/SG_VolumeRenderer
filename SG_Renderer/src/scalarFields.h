@@ -9,6 +9,8 @@
 
 namespace vol {
 
+	//IMPLICIT CLASSES
+
 	class Sphere : public VolumeField<float>
 	{
 	public:
@@ -196,17 +198,18 @@ namespace vol {
 		lux::Vector cen;
 	};
 
+	//OPERATORS
 
 	class ScalarFieldAdd : public VolumeField<float>
 	{
 	public:
-		ScalarFieldAdd(VolumeFloatPtr f, VolumeFloatPtr g):
+		ScalarFieldAdd(const VolumeFloatPtr f, const VolumeFloatPtr g):
 			elem1(f),elem2(g){}
 		const float eval(const lux::Vector& p) const override
 		{
 			return elem1->eval(p) + elem2->eval(p);
 		}
-
+		
 	private:
 		VolumeFloatPtr elem1;
 		VolumeFloatPtr elem2;
@@ -226,10 +229,10 @@ namespace vol {
 		VolumeFloatPtr elem2;
 	};
 
-	class ScalarFieldDivide : public VolumeField<float>
+	class ScalarFieldDiv : public VolumeField<float>
 	{
 	public:
-		ScalarFieldDivide(VolumeFloatPtr f, VolumeFloatPtr g):
+		ScalarFieldDiv(VolumeFloatPtr f, VolumeFloatPtr g):
 			elem1(f), elem2(g) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -240,10 +243,10 @@ namespace vol {
 		VolumeFloatPtr elem2;
 	};
 
-	class ScalarFieldSubtract : public VolumeField<float>
+	class ScalarFieldSub : public VolumeField<float>
 	{
 	public:
-		ScalarFieldSubtract(VolumeFloatPtr f, VolumeFloatPtr g) :
+		ScalarFieldSub(VolumeFloatPtr f, VolumeFloatPtr g) :
 			elem1(f), elem2(g) {}
 		const float eval(const lux::Vector& p) const override
 		{
@@ -279,6 +282,32 @@ namespace vol {
 	private:
 		VolumeFloatPtr elem1;
 	};
+
+	//INLINE OPERATOR OVERRIDES
+
+	inline const ScalarFieldAdd operator+ (VolumeField<float> &f, VolumeField<float> &g)
+	{
+		return ScalarFieldAdd(&f, &g);
+	}
+
+	inline const ScalarFieldSub operator- (VolumeField<float> &f, VolumeField<float> &g)
+	{
+		return ScalarFieldSub(&f, &g);
+	}
+	inline const ScalarFieldMinus operator- (VolumeField<float> &f)
+	{
+		return ScalarFieldMinus(&f);
+	}
+
+	inline const ScalarFieldMult operator* (VolumeField<float> &f, VolumeField<float> &g)
+	{
+		return ScalarFieldMult(&f, &g);
+	}
+	
+	inline const ScalarFieldDiv operator/ (VolumeField<float> &f, VolumeField<float> &g)
+	{
+		return ScalarFieldDiv(&f, &g);
+	}
 }
 
 
