@@ -19,6 +19,10 @@ namespace vol {
 		float val4 = B->eval(lux::Vector(0, 0, 0));
 		float val5 = P->eval(lux::Vector(-1, 0, 1));
 
+		Translate<VolumeFloatPtr,float> trans(S, lux::Vector(0, 0, 1));
+		float sphere2 = trans.eval(lux::Vector(0, 0, 0));
+
+
 		ScalarFieldAdd t1 = *S + *E;
 		VolumeField<float> t2 = ScalarFieldAdd(S,E);
 		//float temp1 = t.eval(lux::Vector(-1, 0, 1));
@@ -27,6 +31,7 @@ namespace vol {
 
 		//VolumeField<float>* t = (VolumeField<float>*)S + (VolumeField<float>*)E;
 		std::cout << "S + E: " << temp1 << std::endl;
+		std::cout << "Translate(S,[0,0,1]): " << sphere2 << std::endl;
 		//std::cout << "S + E(Method2): " << temp1 << std::endl;
 		std::cout << "S: " << val << std::endl;
 		std::cout << "E: " << val2 << std::endl;

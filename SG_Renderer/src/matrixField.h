@@ -66,10 +66,6 @@ namespace vol
 		VolumeMatrixPtr elem2;
 	};
 
-
-
-
-
 	class MatrixFieldVectorRMult : public VolumeField<lux::Vector>
 	{
 	public:

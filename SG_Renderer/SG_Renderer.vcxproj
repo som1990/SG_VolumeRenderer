@@ -139,6 +139,7 @@
     <ClInclude Include="src\luxMath.h" />
     <ClInclude Include="src\matrixField.h" />
     <ClInclude Include="src\scalarFields.h" />
+    <ClInclude Include="src\transformations.h" />
     <ClInclude Include="src\vectorFields.h" />
     <ClInclude Include="src\VolumeField.h" />
   </ItemGroup>

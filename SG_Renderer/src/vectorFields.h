@@ -143,6 +143,11 @@ namespace vol
 		return VectorFieldScalarMult(&f, &g);
 	}
 
+	inline const VectorFieldScalarMult operator* (VolumeField<float> &g, VolumeField<lux::Vector> &f)
+	{
+		return VectorFieldScalarMult(&f, &g);
+	}
+
 	inline const VectorFieldScalarDiv operator/ (VolumeField<lux::Vector> &f, VolumeField<float> &g)
 	{
 		return VectorFieldScalarDiv(&f, &g);

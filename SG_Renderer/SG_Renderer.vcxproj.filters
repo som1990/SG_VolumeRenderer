@@ -47,5 +47,8 @@
     <ClInclude Include="src\CSG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\transformations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

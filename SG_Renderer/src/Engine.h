@@ -3,6 +3,7 @@
 #include "luxMath.h"
 #include "Fields.h"
 #include "CSG.h"
+#include "transformations.h"
 
 namespace vol {
 	void printMessage();
