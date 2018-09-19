@@ -4,10 +4,12 @@
 #include "Fields.h"
 #include "CSG.h"
 #include "transformations.h"
+#include "Camera.h"
 
 namespace vol {
 	void printMessage();
 	void render();
+
 
 }
 

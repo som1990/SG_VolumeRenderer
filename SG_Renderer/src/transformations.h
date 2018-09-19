@@ -1,6 +1,7 @@
 #ifndef transformations_h__
 #define transformations_h__
 
+#include "Fields.h"
 #include <cmath>
 
 namespace vol
@@ -39,7 +40,7 @@ namespace vol
 	};
 	*/
 
-	class ScalarFieldTranslate : VolumeField<float>
+	class ScalarFieldTranslate : public VolumeField<float>
 	{
 	public:
 		ScalarFieldTranslate(VolumeFloatPtr field, lux::Vector val) :
@@ -53,7 +54,7 @@ namespace vol
 		lux::Vector x;
 	};
 
-	class VectorFieldTranslate : VolumeField<lux::Vector>
+	class VectorFieldTranslate : public VolumeField<lux::Vector>
 	{
 	public:
 		VectorFieldTranslate(VolumeVectorPtr field, lux::Vector val) :
@@ -67,7 +68,7 @@ namespace vol
 		lux::Vector x;
 	};
 
-	class MatrixFieldTranslate : VolumeField<lux::Matrix>
+	class MatrixFieldTranslate : public VolumeField<lux::Matrix>
 	{
 	public:
 		MatrixFieldTranslate(VolumeMatrixPtr field, lux::Vector val) :
@@ -82,7 +83,7 @@ namespace vol
 	};
 
 
-	class ScalarFieldScale : VolumeField<float>
+	class ScalarFieldScale : public VolumeField<float>
 	{
 	public:
 		ScalarFieldScale(VolumeFloatPtr field, float scale) :
@@ -138,7 +139,7 @@ namespace vol
 		float s;
 	};
 
-	class ScalarFieldRotate : VolumeField<float>
+	class ScalarFieldRotate : public VolumeField<float>
 	{
 	public:
 		ScalarFieldRotate(VolumeFloatPtr field, lux::Vector alphaVec) :
@@ -153,7 +154,7 @@ namespace vol
 		lux::Vector aVec;
 	};
 
-	class VectorFieldRotate : VolumeField<lux::Vector>
+	class VectorFieldRotate : public VolumeField<lux::Vector>
 	{
 	public:
 		VectorFieldRotate(VolumeVectorPtr field, lux::Vector alphaVec) :
@@ -169,7 +170,7 @@ namespace vol
 		lux::Vector aVec;
 	};
 
-	class MatrixFieldRotate : VolumeField<lux::Matrix>
+	class MatrixFieldRotate : public VolumeField<lux::Matrix>
 	{
 	public:
 		MatrixFieldRotate(VolumeMatrixPtr field, lux::Vector alphaVec) :

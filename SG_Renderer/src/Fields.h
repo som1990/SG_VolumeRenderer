@@ -1,9 +1,9 @@
 #ifndef Fields_h__
 #define Fields_h__
 
-#include "scalarFields.h"
-#include "vectorFields.h"
-#include "matrixField.h"
-#include "colorField.h"
+#include "Fields/colorField.h"
+#include "Fields/vectorFields.h"
+#include "Fields/scalarFields.h"
+#include "Fields/matrixField.h"
 
 #endif // Fields_h__
