@@ -10,8 +10,8 @@ namespace obj
 		VolumeObject(vol::VolumeFloatPtr scalarField, vol::VolumeColorPtr colorField, vol::VolumeVectorPtr vectorField, vol::VolumeMatrixPtr matrixField) :
 			sField(scalarField), cField(colorField), vField(vectorField), mField(matrixField) {}
 
-		const vol::VolumeFloatPtr getScalarField() const { return sField; }
-		const vol::VolumeColorPtr getColorField() const { return cField; }
+		const vol::VolumeFloatPtr &getScalarField() const { return sField; }
+		const vol::VolumeColorPtr &getColorField() const { return cField; }
 	private:
 		vol::VolumeFloatPtr sField;
 		vol::VolumeColorPtr cField;

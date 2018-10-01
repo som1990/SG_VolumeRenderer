@@ -115,8 +115,10 @@ namespace vol {
 			cen(center), n(normal), h(height), maxTheta(maxAngle) {}
 		const float eval(const lux::Vector& p) const override
 		{
+			const float PI = 3.14159265359;
 			lux::Vector x = p - cen;
-			float val = x*n;
+			lux::Vector axis = n.unitvector();
+			float val = x*axis;
 			if (val < 0) 
 			{
 				return val;
@@ -127,7 +129,8 @@ namespace vol {
 			}
 			else if (val > 0 && val < h)
 			{
-				return (val - x.magnitude()*cos(maxTheta));
+				float rTheta = maxTheta * PI / 180.0;
+				return (val - x.magnitude()*cos(rTheta));
 			}
 		}
 
@@ -170,9 +173,10 @@ namespace vol {
 			}
 			else
 			{
-				float val = cos(x.X() + rad*x.Y()) + cos(x.X() - rad*x.Y()) +
-							cos(x.Y() + rad*x.Z()) + cos(x.Y() - rad*x.Z()) +
-							cos(x.Z() + rad*x.X()) + cos(x.Z() - rad*x.X()) - 2;
+				float val = std::cos(x.X() + rad*x.Y()) + std::cos(x.X() - rad*x.Y()) +
+							std::cos(x.Y() + rad*x.Z()) + std::cos(x.Y() - rad*x.Z()) +
+							std::cos(x.Z() - rad*x.X()) + std::cos(x.Z() + rad*x.X()) - 2.0;
+				return val;
 			}
 		}
 
@@ -190,7 +194,7 @@ namespace vol {
 		const float eval(const lux::Vector& p) const override
 		{
 			lux::Vector x = p - cen;
-			float val = -(x.X()*x.X()*x.Y()*x.Y() + x.Y()*x.Y()*x.Z()*x.Z() - x.X()*x.Y()*x.Z());
+			float val = -(x.X()*x.X()*x.Y()*x.Y() + x.X()*x.X()*x.Z()*x.Z() + x.Y()*x.Y()*x.Z()*x.Z() - x.X()*x.Y()*x.Z());
 			return val;
 		}
 

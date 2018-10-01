@@ -5,10 +5,13 @@
 #include "CSG.h"
 #include "transformations.h"
 #include "Camera.h"
+#include "Scene.h"
+#include "Ray.h"
+#include "VolumeObject.h"
 
 namespace vol {
 	void printMessage();
-	void render();
+	void render(lux::Color* exr, int iWidth, int iHeight);
 
 
 }

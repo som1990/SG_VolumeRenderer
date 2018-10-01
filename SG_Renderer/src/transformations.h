@@ -154,6 +154,21 @@ namespace vol
 		lux::Vector aVec;
 	};
 
+	class ColorFieldRotate : public VolumeField<lux::Color>
+	{
+	public:
+		ColorFieldRotate(VolumeColorPtr field, lux::Vector alphaVec) :
+			elem(field), aVec(alphaVec) {}
+		const lux::Color eval(const lux::Vector& p) const override
+		{
+			lux::Vector pInvRotated = calcFieldRotation(p, -aVec);
+			return elem->eval(pInvRotated);
+		}
+	private:
+		VolumeColorPtr elem;
+		lux::Vector aVec;
+	};
+
 	class VectorFieldRotate : public VolumeField<lux::Vector>
 	{
 	public:
