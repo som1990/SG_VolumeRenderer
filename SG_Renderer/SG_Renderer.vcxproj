@@ -133,17 +133,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AABBox.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AABBox.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Fields\colorField.h" />
     <ClInclude Include="src\CSG.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Fields.h" />
+    <ClInclude Include="src\RenderSettings.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\VolumeObject.h" />
     <ClInclude Include="src\luxMath.h" />

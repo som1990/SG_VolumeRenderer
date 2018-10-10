@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "OpenImageIO/imageio.h"
+#include "RenderSettings.h"
 OIIO_NAMESPACE_USING
 
 
@@ -48,7 +49,12 @@ int main()
 {
 	//vol::printMessage();
 	lux::Color* exr = new lux::Color[IWIDTH*IHEIGHT];
-	vol::render(exr, IWIDTH, IHEIGHT);
+	vol::Engine e;
+	RenderSettings rend;
+	rend.iWidth = IWIDTH;
+	rend.iHeight = IHEIGHT;
+	e.setRenderSettings(rend);
+	e.render(exr);
 	writeOIIOImage("D:/Work/soum.exr", exr);
 	std::cin.get();
 }

@@ -1,26 +1,11 @@
 #include "Engine.h"
+
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <omp.h>
 
 #define PI 3.14159265359
-
-struct RenderSettings{
-//Image Attributes
-	int iWidth = 500;
-	int iHeight = 500;
-
-
-//Camera Settings
-	int nearDist = 2;
-	int farDist = 10;
-
-//RayMarch Attributes
-	float stepSize = 0.01;
-	float kappa = 50.0;
-
-
-};
 
 static float clamp(float a, float low, float high)
 {
@@ -29,6 +14,7 @@ static float clamp(float a, float low, float high)
 }
 
 namespace vol {
+	
 	void printMessage() {
 		std::cout << "Hello World" << std::endl;
 		std::cin.get();
@@ -72,8 +58,8 @@ namespace vol {
 		Elipse *E2 = new Elipse(lux::Vector(-0.419, 1.551, 0.919), lux::Vector(0, 1, 0), 0.293, 0.201);
 		ScalarFieldUnion* Eyes = new ScalarFieldUnion(E1, E2);
 
-		ClampColorFields* Ctest = new ClampColorFields(C2, E1, C2, E2);
-		ClampColorFields* C3 = new ClampColorFields(C1, body, Ctest, Eyes);
+		
+		//ClampColorFields* C3 = new ClampColorFields(C1, body, C2, Eyes);
 		//ClampColorFields* Ctest2 = new ClampColorFields(Ctest, Eyes, C1, B1);
 
 
@@ -110,36 +96,43 @@ namespace vol {
 		SolidColorField* CTurban_1 = new SolidColorField(c_Turban);
 		Torus *Turban_2 = new Torus(lux::Vector(0.0, 3.014, 0.0), lux::Vector(0.0, 0.980, -0.198), 0.665, 0.5*0.665);
 		ScalarFieldUnion *Turban_3 = new ScalarFieldUnion(Turban_1, Turban_2);
-		ClampColorFields *CTurban3 = new ClampColorFields(CTurban_1, Turban_1, C2, Turban_2);
+		//ClampColorFields *CTurban3 = new ClampColorFields(CTurban_1, Turban_1, C2, Turban_2);
+		MaskColorFields *CTurban3 = new MaskColorFields(CTurban_1, Turban_1, C2, Turban_2);
 
 		Icosahedron *Turban_4 = new Icosahedron(lux::Vector(0, 0, 0), 1.61803399);
 		ScalarFieldScale *sTurban_4 = new ScalarFieldScale(Turban_4, 0.15*0.946);
 		ScalarFieldTranslate *tsTurban_4 = new ScalarFieldTranslate(sTurban_4, lux::Vector (0, 2.955, -0.069));
 		SolidColorField* CTurban4 = new SolidColorField(c_Turban2);
 		
-		SteinerPatch *Turban_5 = new SteinerPatch(lux::Vector(0, 3.43, 1.341));
+		SteinerPatch *Turban_5 = new SteinerPatch(lux::Vector(0, 2.43, 2.341));
 		SolidColorField *CTurban5 = new SolidColorField(c_GREEN);
 		//ScalarFieldTranslate *tTurban_5 = new ScalarFieldTranslate(Turban_5, lux::Vector(0, 2.794, 2.015));
 		ScalarFieldUnion *Turban_6 = new ScalarFieldUnion(Turban_3, Turban_5);
-		ClampColorFields *CTurban6 = new ClampColorFields(C1, Turban_5, CTurban3, Turban_3);
+		MaskColorFields *CTurban6 = new MaskColorFields(CTurban5, Turban_5, CTurban3, Turban_3);
+		//ClampColorFields *CTurban6 = new ClampColorFields(C1, Turban_5, CTurban3, Turban_3);
 
 		ScalarFieldUnion *Turban = new ScalarFieldUnion(Turban_6, tsTurban_4);
-		ClampColorFields *CTurban = new ClampColorFields(CTurban6, Turban_6, CTurban4, tsTurban_4);
+		//ClampColorFields *CTurban = new ClampColorFields(CTurban6, Turban_6, CTurban4, tsTurban_4);
+		MaskColorFields *CTurban = new MaskColorFields(CTurban6, Turban_6, CTurban4, tsTurban_4);
 
 		//Figure
 		ScalarFieldUnion* fig1 = new ScalarFieldUnion(Eyes, body);
+		MaskColorFields *CFig1 = new MaskColorFields(C2, Eyes, C1, body);
 		ScalarFieldUnion* fig2 = new ScalarFieldUnion(fig1, Feet_Nose);
 		
-		ClampColorFields *CFig2 = new ClampColorFields(CFeet, Feet_Nose, C3, fig1);
+		//ClampColorFields *CFig2 = new ClampColorFields(CFeet, Feet_Nose, CFig1, fig1);
+		MaskColorFields *CFig2 = new MaskColorFields(CFeet, Feet_Nose, CFig1, fig1);
 		ScalarFieldUnion* fig3 = new ScalarFieldUnion(fig2, Dim);
-		ClampColorFields *CFig3 = new ClampColorFields(CFig2, fig2, C_Pink, Dim);
+		//ClampColorFields *CFig3 = new ClampColorFields(CFig2, fig2, C_Pink, Dim);
+		MaskColorFields *CFig3 = new MaskColorFields(CFig2, fig2, C_Pink, Dim);
 
 		ScalarFieldUnion* fig4 = new ScalarFieldUnion(fig3, Turban);
-		ClampColorFields *Cfig4 = new ClampColorFields(CFig3, fig3, CTurban, Turban);
+		//ClampColorFields *Cfig4 = new ClampColorFields(CFig3, fig3, CTurban, Turban);
+		MaskColorFields *Cfig4 = new MaskColorFields(CFig3, fig3, CTurban, Turban);
 		
 		ScalarFieldUnion *model = new ScalarFieldUnion(fig4, Tummy);
-		ClampColorFields *Cmodel = new ClampColorFields(Cfig4, fig4, CStomach, Tummy);
-
+		//ClampColorFields *Cmodel = new ClampColorFields(Cfig4, fig4, CStomach, Tummy);
+		MaskColorFields *Cmodel = new MaskColorFields(Cfig4, fig4, CStomach, Tummy);
 
 		lux::Vector rotAngle(0, -1.0*0.5*PI, 0);
 		
@@ -148,19 +141,32 @@ namespace vol {
 		
 		//VolumeFloatPtr fig2 = new ScalarFieldScale(fig, 2);
 
-		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(Tummy, CStomach, nullptr, nullptr);
+		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(model, Cmodel, nullptr, nullptr);
 		s1.addObject("Body", o1);
 	}
 
-	lux::Color rayMarch(const Scene &s1, const Ray &r, const RenderSettings& parms)
+	
+	void Engine::setRenderSettings(const RenderSettings& rend)
 	{
-		int steps = (parms.farDist - parms.nearDist)/parms.stepSize;
-		float k = parms.kappa;
-		lux::Vector x = r.getOrigin() + r.getDir()*parms.nearDist;
+		xRes = rend.iWidth;
+		yRes = rend.iHeight;
+		stepSize = rend.stepSize;
+		kappa = rend.kappa;
+		nearDist = rend.nearDist;
+		farDist = rend.farDist;
+
+	}
+
+	lux::Color Engine::rayMarch(const Scene &s1, const Ray &r)
+	{
+		int steps = (farDist - nearDist)/stepSize;
+		float k = kappa;
+
+		lux::Vector x = r.getOrigin() + r.getDir()*nearDist;
 		//std::cout << "Position: " << x.X() << ", " << x.Y() << ", " << x.Z() << std::endl;
 		std::string var = "Body";
 		std::shared_ptr<obj::VolumeObject> s = s1.getObject(var);
-
+		
 		VolumeFloatPtr density = s->getScalarField();
 		
 	//	std::cout << density->eval(lux::Vector(0, 0, 0)) << std::endl;
@@ -174,11 +180,14 @@ namespace vol {
 		#pragma omp parallel for
 		for (int i = 0; i < steps; i++)
 		{
-			x += r.getDir()*parms.stepSize;
-			float val = clamp(density->eval(x), 0, 1);
+			float val = (density->eval(x) < 0) ? 0 : density->eval(x);
+				
+			x += r.getDir()*stepSize;
+			
+			
 			if (val != 0)
 			{
-				float dT = std::exp(-parms.kappa*parms.stepSize*val);
+				float dT = std::exp(-kappa*stepSize*val);
 				L += color->eval(x) * (1 - dT)*T;
 				//std::cout << "BuildColor: " << L[0] << ", " << L[1] << ", " << L[2] << std::endl;
 				T *= dT;
@@ -191,37 +200,45 @@ namespace vol {
 	}
 
 
-	void generateImage(const Scene& s1, const RenderSettings& parms, lux::Color* exr)
+	void Engine::generateImage(const Scene& s1, lux::Color* exr)
 	{
 		std::shared_ptr<obj::Camera> cam = s1.getCam();
 		//std::cout << "Rendering Image: "
 		//lux::Vector v = cam->evalDir(0, 0, 1024, 720);
 		//std::cout << "v: " << v.X() << ", " << v.Y() << ", " << v.Z() << std::endl;
-		for (int j = 0; j < parms.iHeight; j++)
+		for (int j = 0; j < yRes; j++)
 		{
 		#pragma omp parallel for
-			for (int i = 0; i < parms.iWidth; i++)
+			for (int i = 0; i < xRes; i++)
 			{
-				int index = i + parms.iWidth*j;
-				Ray v = cam->getRay(i,j,parms.iWidth,parms.iHeight);
-				lux::Color c = rayMarch(s1, v, parms);
+				lux::Color c(0.0,0.0,0.0,1.0);
+				int index = i + xRes*j;
+				Ray v = cam->getRay(i,j,xRes,yRes);				
+				bool hit = box->intersect(v, nearDist, farDist);
+				if (hit)
+				{
+					//std::cout << "I HIT!" << std::endl;
+					c = rayMarch(s1, v);
+				}
 				exr[index] = c;
 			}
 		}
 	}
 
-	void render(lux::Color* exr, int iWidth, int iHeight) {
+	void Engine::render(lux::Color* exr) {
 		
-
 		Scene s1;
 		RenderSettings parm;
-		parm.iWidth = iWidth;
-		parm.iHeight = iHeight;
 		float aspectRatio = 1.778;
+		box->setBounds(lux::Vector(-1.723, -1.763, 1.723), lux::Vector(1.723, 4.422, -1.723));
+
 		s1.createCam(lux::Vector(0.058, 3.004, 6.675), lux::Vector(0.007, -0.146, -0.989), lux::Vector(0.001, 0.989, -0.146), 54.00f, aspectRatio);
 		testScene(s1);
-		generateImage(s1, parm,exr);
+		generateImage(s1,exr);
 
 		
 	}
+
+
+
 }
