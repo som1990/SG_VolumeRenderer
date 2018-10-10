@@ -24,7 +24,7 @@ public:
 private:
 	std::shared_ptr<obj::Camera> cam;
 	std::map<std::string, std::shared_ptr<obj::VolumeObject>> objList;
-
+	
 };
 
 

@@ -1,5 +1,6 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
+
 #include "luxMath.h"
 #include "Fields.h"
 #include "CSG.h"
@@ -19,17 +20,16 @@ namespace vol {
 	public:
 		Engine() {}
 		void setRenderSettings(const RenderSettings& rend);
-		void render(lux::Color* exr);
+		void render(lux::Color* exr, int frame);
 		AABBox* box = new AABBox(lux::Vector(0, 0, 0), lux::Vector(1, 1, 1));
 	private:
 		int xRes=500, yRes=500;
 		float stepSize=0.01, kappa=50.0;
 		float nearDist=2, farDist=10;
-
+		int numFrames = 24;
 		lux::Color rayMarch(const Scene &s1, const Ray &r);
 		void generateImage(const Scene& s1, lux::Color* exr);
 	};
-
 
 }
 

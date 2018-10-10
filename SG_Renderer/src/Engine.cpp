@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <omp.h>
+#include <iomanip>
 
 #define PI 3.14159265359
 
@@ -19,6 +20,45 @@ namespace vol {
 		std::cout << "Hello World" << std::endl;
 		std::cin.get();
 	} 
+
+	void updateScene(Scene &s, int nFrames, int frame)
+	{
+		auto lObj = s.getObjList();
+		for (auto o : lObj)
+		{
+			VolumeFloatPtr density = o.second->getScalarField();
+			VolumeColorPtr color = o.second->getColorField();
+
+			float angle = (360.0 / nFrames ) * float(frame) * (PI / 180.0);
+			lux::Vector rotAngle(0, angle, 0);
+
+			ScalarFieldRotate* sRot = new ScalarFieldRotate(density, rotAngle);
+			ColorFieldRotate* cRot = new ColorFieldRotate(color, rotAngle);
+
+		}
+	}
+
+	void testScene2(Scene &s1, int nFrames , int frame)
+	{
+		lux::Color *sColor = new lux::Color(1.0, 1.0, 1.0, 1.0);
+		
+
+		//Sphere *S = new Sphere(lux::Vector(0, 2.0, 0), .5);
+		Box *B1 = new Box(lux::Vector(0, 1.654, 0), 1.829*0.5, 8);
+		SolidColorField *sC = new SolidColorField(sColor);
+
+		float angle = (360.0 / nFrames) * float(frame) * (PI / 180.0);
+		lux::Vector rotAngle(0, angle, 0);
+		ScalarFieldRotate* sRot = new ScalarFieldRotate(B1, rotAngle);
+		ColorFieldRotate* cRot = new ColorFieldRotate(sC, rotAngle);
+
+
+		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(sRot, cRot, nullptr, nullptr);
+		s1.addObject("Body", o1);
+
+	}
+
+	
 	void testScene(Scene &s1){
 		lux::Color *c_body = new lux::Color(0.600, 0.816, 0.894, 1.0);
 		lux::Color *c_eyes = new lux::Color(0.373, 0.075, 0.216, 1.0);
@@ -154,6 +194,7 @@ namespace vol {
 		kappa = rend.kappa;
 		nearDist = rend.nearDist;
 		farDist = rend.farDist;
+		numFrames = rend.fEnd - rend.fBegin;
 
 	}
 
@@ -177,6 +218,7 @@ namespace vol {
 		float T = 1;
 		lux::Color L(0,0,0,1.0);
 //		std::cout << "InitColor: " << L[0] << ", " << L[1] << ", " << L[2] << std::endl;
+		
 		#pragma omp parallel for
 		for (int i = 0; i < steps; i++)
 		{
@@ -206,6 +248,7 @@ namespace vol {
 		//std::cout << "Rendering Image: "
 		//lux::Vector v = cam->evalDir(0, 0, 1024, 720);
 		//std::cout << "v: " << v.X() << ", " << v.Y() << ", " << v.Z() << std::endl;
+		float invSize = 1.0 / ((xRes*yRes));
 		for (int j = 0; j < yRes; j++)
 		{
 		#pragma omp parallel for
@@ -221,24 +264,25 @@ namespace vol {
 					c = rayMarch(s1, v);
 				}
 				exr[index] = c;
+				float val = (round(index*invSize * 10000) / 100);
+				std::cout << "Rendering.... " << std::setprecision(2)<< std::fixed << val << "%" << '\r' <<  std::flush ;
+				
 			}
 		}
+		std::cout << std::endl;
 	}
 
-	void Engine::render(lux::Color* exr) {
+
+	void Engine::render(lux::Color* exr, int frame) {
 		
 		Scene s1;
-		RenderSettings parm;
+
 		float aspectRatio = 1.778;
 		box->setBounds(lux::Vector(-1.723, -1.763, 1.723), lux::Vector(1.723, 4.422, -1.723));
-
 		s1.createCam(lux::Vector(0.058, 3.004, 6.675), lux::Vector(0.007, -0.146, -0.989), lux::Vector(0.001, 0.989, -0.146), 54.00f, aspectRatio);
-		testScene(s1);
-		generateImage(s1,exr);
-
-		
+		testScene2(s1, numFrames, frame);
+		//updateScene(s1,f);
+		generateImage(s1, exr);
 	}
-
-
 
 }
