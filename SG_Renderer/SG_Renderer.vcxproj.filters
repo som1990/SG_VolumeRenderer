@@ -77,5 +77,11 @@
     <ClInclude Include="src\AABBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

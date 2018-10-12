@@ -1,5 +1,5 @@
-#ifndef Header_h__
-#define Header_h__
+#ifndef VolumeObject_h__
+#define VolumeObject_h__
 #include "Fields.h"
 
 namespace obj

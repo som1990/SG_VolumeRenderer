@@ -14,6 +14,36 @@ void Scene::addObject(const string &name, shared_ptr<obj::VolumeObject> object)
 	objList.insert(pair<string, shared_ptr<obj::VolumeObject>>(name, object));
 }
 
+void Scene::removeObject(const std::string &name)
+{
+	map<string, shared_ptr<obj::VolumeObject>>::iterator it;
+	it = objList.find(name);
+	if (it != objList.end())
+	{
+		objList.erase(it);
+		return;
+	}
+	cout << "Object '" << name << "' does not exist." << endl;
+}
+
+void Scene::addLight(const std::string &name, std::shared_ptr<obj::Light> light)
+{
+	lightList.insert(pair < string, shared_ptr<obj::Light>>(name, light));
+}
+
+
+void Scene::removeLight(const std::string &name)
+{
+	map<string, shared_ptr<obj::Light>>::iterator it;
+	it = lightList.find(name);
+	if (it != lightList.end())
+	{
+		lightList.erase(it);
+		return;
+	}
+	cout << "Light '" << name << "' does not exist." << endl;
+}
+
 /*
 void Scene::addObject(const string &name, unique_ptr<obj::VolumeObject> object)
 {
@@ -39,15 +69,12 @@ const std::shared_ptr<obj::VolumeObject> Scene::getObject(const std::string& nam
 
 }
 
-void Scene::removeObject(const std::string &name)
+const std::shared_ptr<obj::Light> Scene::getLight(const std::string &name) const
 {
-	map<string, shared_ptr<obj::VolumeObject>>::iterator it;
-	it = objList.find(name);
-	if (it != objList.end())
-	{
-		objList.erase(it);
-		return;
-	}
-	cout << "Object '" << name << "' does not exist." << endl;
+	auto it = lightList.find(name);
+
+	return it->second;
 }
+
+
 
