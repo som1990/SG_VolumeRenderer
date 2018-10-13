@@ -13,13 +13,17 @@ namespace obj{
 		virtual ~Light() {}
 		const float getIntensity() const { return intensity; }
 		const lux::Color getColor() const { return lCol; }
-		virtual const Ray getlightRay(const lux::Vector p) { 
+		virtual const Ray getlightRay(const lux::Vector &p) { 
 			lDir = (p - pos).unitvector();
 			return Ray(pos, lDir);
 		}
 		virtual lux::Vector const getNormal(const lux::Vector p)
 		{	
 			return normal;
+		}
+
+		virtual const lux::Color eval(const lux::Vector &p) const {
+			return lux::Color(0, 0, 0, 1.0);
 		}
 
 	protected:

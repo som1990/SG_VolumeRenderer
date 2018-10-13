@@ -12,11 +12,15 @@ namespace obj
 
 		const vol::VolumeFloatPtr &getScalarField() const { return sField; }
 		const vol::VolumeColorPtr &getColorField() const { return cField; }
+		const bool getHit() const { return hit; }
+		void setHit(bool _hit) { hit = _hit; }
+
 	private:
 		vol::VolumeFloatPtr sField;
 		vol::VolumeColorPtr cField;
 		vol::VolumeVectorPtr vField;
 		vol::VolumeMatrixPtr mField;
+		bool hit = true;
 	};
 
 

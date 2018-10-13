@@ -27,7 +27,8 @@ namespace vol {
 		float stepSize=0.01, kappa=50.0;
 		float nearDist=2, farDist=10;
 		int numFrames = 24;
-		lux::Color rayMarch(const Scene &s1, const Ray &r);
+		lux::Color rayMarchEmission(const Scene &s1, const Ray &r);
+		lux::Color rayMarchLights(const Scene &s1, const Ray &r);
 		void generateImage(const Scene& s1, lux::Color* exr);
 	};
 

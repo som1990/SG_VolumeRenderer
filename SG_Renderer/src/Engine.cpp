@@ -198,7 +198,7 @@ namespace vol {
 
 	}
 
-	lux::Color Engine::rayMarch(const Scene &s1, const Ray &r)
+	lux::Color Engine::rayMarchEmission(const Scene &s1, const Ray &r)
 	{
 		int steps = (farDist - nearDist)/stepSize;
 		float k = kappa;
@@ -222,8 +222,8 @@ namespace vol {
 		#pragma omp parallel for
 		for (int i = 0; i < steps; i++)
 		{
-			float val = (density->eval(x) < 0) ? 0 : density->eval(x);
-				
+			float val = density->eval(x);
+			val = (val < 0) ? 0 :val;
 			x += r.getDir()*stepSize;
 			
 			
@@ -241,6 +241,59 @@ namespace vol {
 		return L;
 	}
 
+
+	lux::Color Engine::rayMarchLights(const Scene &s1, const Ray &r)
+	{
+		int steps = (farDist - nearDist) / stepSize;
+		float k = kappa;
+
+		lux::Vector x = r.getOrigin() + r.getDir()*nearDist;
+		auto objs = s1.getObjList();
+		auto lights = s1.getLights();
+
+		float T = 1;
+		lux::Color L(0, 0, 0, 1.0);
+		float phase = 1.0;
+
+		#pragma omp parallel for
+		for (int i = 0; i < steps; i++)
+		{
+			for (std::map<std::string, std::shared_ptr<obj::VolumeObject>>::iterator it = objs.begin(); it != objs.end(); ++it)
+			{
+				std::shared_ptr<obj::VolumeObject> s = it->second;
+				VolumeFloatPtr density = s->getScalarField();
+				VolumeColorPtr col_v = s->getColorField();
+				
+				bool hit = s->getHit();
+				if (hit)
+				{
+
+					float val = density->eval(x);
+					
+					val = (val < 0) ? 0 : val;
+
+					x += r.getDir()*stepSize;
+					if (val != 0)
+					{
+						
+						float dT = std::exp(-kappa * stepSize * val);
+						lux::Color col_s(0, 0, 0, 1.0);
+						for (std::map<std::string, std::shared_ptr<obj::Light>>::iterator it2 = lights.begin(); it2 != lights.end(); ++it2)
+						{
+							std::shared_ptr<obj::Light> l = it2->second;
+							lux::Color col_l = l->getColor();
+							
+							col_s += col_l * col_v->eval(x) * phase;//phase=1.0
+						}
+					}
+
+				}
+
+			}
+		}
+
+
+	}
 
 	void Engine::generateImage(const Scene& s1, lux::Color* exr)
 	{
@@ -261,7 +314,8 @@ namespace vol {
 				if (hit)
 				{
 					//std::cout << "I HIT!" << std::endl;
-					c = rayMarch(s1, v);
+					//c = rayMarchEmission(s1, v);
+					c = rayMarchLights(s1, v);
 				}
 				exr[index] = c;
 				float val = (round(index*invSize * 10000) / 100);
