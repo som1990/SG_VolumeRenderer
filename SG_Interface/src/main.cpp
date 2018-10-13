@@ -65,6 +65,9 @@ int main()
 		lux::Color* exr = new lux::Color[IWIDTH*IHEIGHT];
 		e.render(exr,f);
 		std::cout << "RENDERING END" << std::endl;
+
+
+
 		writeOIIOImage("D:/Work/soum.exr", exr);
 		auto stop = high_resolution_clock::now();
 		auto timeTaken = duration_cast<seconds>(stop - start);

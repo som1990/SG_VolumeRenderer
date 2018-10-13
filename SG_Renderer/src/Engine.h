@@ -25,6 +25,7 @@ namespace vol {
 	private:
 		int xRes=500, yRes=500;
 		float stepSize=0.01, kappa=50.0;
+		float lStepSize = 0.1;
 		float nearDist=2, farDist=10;
 		int numFrames = 24;
 		lux::Color rayMarchEmission(const Scene &s1, const Ray &r);

@@ -4,6 +4,10 @@
 
 #include "luxMath.h"
 #include "Ray.h"
+#include "LightData.h"
+#include <omp.h>
+#include <memory>
+
 namespace obj{
 	
 	class Light {
@@ -14,22 +18,41 @@ namespace obj{
 		const float getIntensity() const { return intensity; }
 		const lux::Color getColor() const { return lCol; }
 		virtual const Ray getlightRay(const lux::Vector &p) { 
-			lDir = (p - pos).unitvector();
+			lDir = (pos - p).unitvector();
 			return Ray(pos, lDir);
 		}
-		virtual lux::Vector const getNormal(const lux::Vector p)
-		{	
-			return normal;
-		}
+		virtual lux::Vector const getNormal(const lux::Vector p) const { return normal;}
 
-		virtual const lux::Color eval(const lux::Vector &p) const {
-			return lux::Color(0, 0, 0, 1.0);
+		virtual const lux::Color eval(std::unique_ptr<LightData> &lData) {
+			float lDist = (pos - lData->pos).magnitude();
+			lDir = (pos - lData->pos).unitvector();
+			lux::Vector x_L = lData->pos;
+
+			int steps = floor(lData->lFarDist / lData->lStepSize);
+			
+			
+			float DSM = 0;
+			#pragma omp parallel for
+			for (int i = 0; i < steps; i++) {
+				float density = lData->density->eval(x_L);
+				density = (density < 0) ? 0 : density;
+				x_L += lData->lStepSize*lDir;
+				if (density != 0)
+				{
+					DSM += density*lData->lStepSize;
+				}
+
+			}
+			float T_L = exp(-lData->kappa * DSM);
+
+			return (lCol * T_L);
 		}
 
 	protected:
 		lux::Vector lDir, pos, normal{};
 		lux::Color lCol;
 		float intensity;
+
 
 	};
 

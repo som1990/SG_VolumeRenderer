@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="src\AABBox.h" />
     <ClInclude Include="src\Light.h" />
+    <ClInclude Include="src\LightData.h" />
     <ClInclude Include="src\PointLight.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Camera.h" />

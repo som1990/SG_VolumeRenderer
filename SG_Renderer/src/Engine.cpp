@@ -1,5 +1,6 @@
 #include "Engine.h"
-
+#include "LightData.h"
+#include <memory.h>
 #include <iostream>
 #include <algorithm>
 #include <cmath>
@@ -43,19 +44,20 @@ namespace vol {
 		lux::Color *sColor = new lux::Color(1.0, 1.0, 1.0, 1.0);
 		
 
-		//Sphere *S = new Sphere(lux::Vector(0, 2.0, 0), .5);
+		Sphere *S = new Sphere(lux::Vector(0, 2.0, 0), 1);
 		Box *B1 = new Box(lux::Vector(0, 1.654, 0), 1.829*0.5, 8);
 		SolidColorField *sC = new SolidColorField(sColor);
 
 		float angle = (360.0 / nFrames) * float(frame) * (PI / 180.0);
 		lux::Vector rotAngle(0, angle, 0);
-		ScalarFieldRotate* sRot = new ScalarFieldRotate(B1, rotAngle);
+		ScalarFieldRotate* sRot = new ScalarFieldRotate(S, rotAngle);
 		ColorFieldRotate* cRot = new ColorFieldRotate(sC, rotAngle);
 
+		std::shared_ptr<obj::Light> l1 = std::make_shared<obj::Light>(lux::Vector(0, 5, 5), lux::Color(0.0, 0.5, 0, 1.0), 1.0);
 
 		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(sRot, cRot, nullptr, nullptr);
 		s1.addObject("Body", o1);
-
+		s1.addLight("Key", l1);
 	}
 
 	
@@ -192,6 +194,8 @@ namespace vol {
 		yRes = rend.iHeight;
 		stepSize = rend.stepSize;
 		kappa = rend.kappa;
+		lStepSize = rend.lStepSize;
+		
 		nearDist = rend.nearDist;
 		farDist = rend.farDist;
 		numFrames = rend.fEnd - rend.fBegin;
@@ -245,9 +249,7 @@ namespace vol {
 	lux::Color Engine::rayMarchLights(const Scene &s1, const Ray &r)
 	{
 		int steps = (farDist - nearDist) / stepSize;
-		float k = kappa;
-
-		lux::Vector x = r.getOrigin() + r.getDir()*nearDist;
+		
 		auto objs = s1.getObjList();
 		auto lights = s1.getLights();
 
@@ -255,43 +257,51 @@ namespace vol {
 		lux::Color L(0, 0, 0, 1.0);
 		float phase = 1.0;
 
-		#pragma omp parallel for
-		for (int i = 0; i < steps; i++)
-		{
-			for (std::map<std::string, std::shared_ptr<obj::VolumeObject>>::iterator it = objs.begin(); it != objs.end(); ++it)
-			{
-				std::shared_ptr<obj::VolumeObject> s = it->second;
-				VolumeFloatPtr density = s->getScalarField();
-				VolumeColorPtr col_v = s->getColorField();
-				
-				bool hit = s->getHit();
-				if (hit)
-				{
+		std::unique_ptr<LightData> lData = std::make_unique<LightData>();
+		lData->kappa = kappa;
+		lData->lStepSize = lStepSize;
 
+		for (std::map<std::string, std::shared_ptr<obj::VolumeObject>>::iterator it = objs.begin(); it != objs.end(); ++it)
+		{
+			lux::Vector x = r.getOrigin() + r.getDir()*nearDist;
+			std::shared_ptr<obj::VolumeObject> s = it->second;
+			VolumeFloatPtr density = s->getScalarField();
+			VolumeColorPtr col_v = s->getColorField();
+			lData->density = density;
+			bool hit = s->getHit();
+			if (hit)
+			{
+				#pragma omp parallel for
+				for (int i = 0; i < steps; i++)
+				{
+			
 					float val = density->eval(x);
 					
 					val = (val < 0) ? 0 : val;
 
-					x += r.getDir()*stepSize;
 					if (val != 0)
-					{
+					{	
+						lData->pos = x;
 						
 						float dT = std::exp(-kappa * stepSize * val);
 						lux::Color col_s(0, 0, 0, 1.0);
 						for (std::map<std::string, std::shared_ptr<obj::Light>>::iterator it2 = lights.begin(); it2 != lights.end(); ++it2)
 						{
 							std::shared_ptr<obj::Light> l = it2->second;
-							lux::Color col_l = l->getColor();
-							
-							col_s += col_l * col_v->eval(x) * phase;//phase=1.0
+							col_s += l->eval(lData) * col_v->eval(x) * phase;//phase=1.0
 						}
+
+						L += col_s * (1 - dT) * T;
+						T *= dT;
 					}
-
+					x += r.getDir()*stepSize;
 				}
-
+				
 			}
+			//delete density, col_v;
 		}
-
+		L[3] = 1 - T;
+		return L;
 
 	}
 

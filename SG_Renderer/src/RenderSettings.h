@@ -16,7 +16,7 @@ struct RenderSettings {
 
 	//RayMarch Attributes
 	float stepSize = 0.01;
-	float kappa = 1000.0;
+	float kappa = 100.0;
 
 	//DSM Attributes
 	float lStepSize = 0.1;
