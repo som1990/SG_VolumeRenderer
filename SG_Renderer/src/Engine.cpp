@@ -53,11 +53,13 @@ namespace vol {
 		ScalarFieldRotate* sRot = new ScalarFieldRotate(S, rotAngle);
 		ColorFieldRotate* cRot = new ColorFieldRotate(sC, rotAngle);
 
-		std::shared_ptr<obj::Light> l1 = std::make_shared<obj::Light>(lux::Vector(0, 5, 5), lux::Color(0.0, 0.5, 0, 1.0), 1.0);
+		std::shared_ptr<obj::Light> l1 = std::make_shared<obj::Light>(lux::Vector(5, 5, 5), lux::Color(0.0, 0.5, 0, 1.0), 1.0);
+		std::shared_ptr<obj::Light> l2 = std::make_shared<obj::Light>(lux::Vector(-5, 5, 5), lux::Color(0.2, 0.0, 0, 1.0), 1.0);
 
 		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(sRot, cRot, nullptr, nullptr);
 		s1.addObject("Body", o1);
 		s1.addLight("Key", l1);
+		s1.addLight("Fill", l2);
 	}
 
 	
@@ -267,7 +269,7 @@ namespace vol {
 			std::shared_ptr<obj::VolumeObject> s = it->second;
 			VolumeFloatPtr density = s->getScalarField();
 			VolumeColorPtr col_v = s->getColorField();
-			lData->density = density;
+			lData->volume = density;
 			bool hit = s->getHit();
 			if (hit)
 			{

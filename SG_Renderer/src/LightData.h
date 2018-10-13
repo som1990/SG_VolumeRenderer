@@ -9,9 +9,9 @@
 struct LightData {
 	lux::Vector pos = lux::Vector(0,0,0);
 	float kappa = 10;
-	vol::VolumeFloatPtr density = nullptr;
+	vol::VolumeFloatPtr volume;
 
-	int lStepSize = 0.1;
+	float lStepSize = 0.1;
 	float lFarDist = 2.0;
 };
 

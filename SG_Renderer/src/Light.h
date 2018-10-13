@@ -7,6 +7,7 @@
 #include "LightData.h"
 #include <omp.h>
 #include <memory>
+#include <iostream>
 
 namespace obj{
 	
@@ -29,20 +30,22 @@ namespace obj{
 			lux::Vector x_L = lData->pos;
 
 			int steps = floor(lData->lFarDist / lData->lStepSize);
-			
-			
+			//std::cout << "stepsize: " << lData->lStepSize << std::endl;
+			float density = 0;
 			float DSM = 0;
 			#pragma omp parallel for
 			for (int i = 0; i < steps; i++) {
-				float density = lData->density->eval(x_L);
+				density = lData->volume->eval(x_L);
+				//std::cout << "density: " << density << std::endl;
 				density = (density < 0) ? 0 : density;
 				x_L += lData->lStepSize*lDir;
 				if (density != 0)
 				{
 					DSM += density*lData->lStepSize;
 				}
-
+				
 			}
+			
 			float T_L = exp(-lData->kappa * DSM);
 
 			return (lCol * T_L);
