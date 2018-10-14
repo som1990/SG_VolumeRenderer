@@ -97,11 +97,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Boost\boost_1_66_0;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Boost\boost_1_66_0\stage\lib;D:\Boost\boost_1_66_0\libs;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenImageIO.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -110,11 +110,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Boost\boost_1_66_0;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Boost\boost_1_66_0\stage\lib;D:\Boost\boost_1_66_0\libs;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenImageIO.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -125,13 +125,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Boost\boost_1_66_0;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Boost\boost_1_66_0\stage\lib;D:\Boost\boost_1_66_0\libs;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenImageIO.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -142,13 +142,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Boost\boost_1_66_0;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\include\;$(SolutionDir)SG_Renderer\src\;$(SolutionDir)IncludeDir\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Boost\boost_1_66_0\stage\lib;D:\Boost\boost_1_66_0\libs;D:\Work\VolumeModelingandRendering\Project\SG_VolumeRenderer\OpenImageIO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenImageIO.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

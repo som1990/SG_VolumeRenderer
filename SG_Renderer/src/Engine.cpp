@@ -192,16 +192,25 @@ namespace vol {
 	
 	void Engine::setRenderSettings(const RenderSettings& rend)
 	{
+		//Global Settings
 		xRes = rend.iWidth;
 		yRes = rend.iHeight;
-		stepSize = rend.stepSize;
-		kappa = rend.kappa;
-		lStepSize = rend.lStepSize;
-		
-		nearDist = rend.nearDist;
-		farDist = rend.farDist;
 		numFrames = rend.fEnd - rend.fBegin;
 
+
+		//Volume Renderer Settings
+		stepSize = rend.stepSize;
+		kappa = rend.kappa;
+		
+		//Light Settings
+		lStepSize = rend.lStepSize;
+		gridedDSM = rend.gridedDSM;
+		lGridSize = rend.lGridSize;
+
+		//Camera Settings
+		nearDist = rend.nearDist;
+		farDist = rend.farDist;
+		
 	}
 
 	lux::Color Engine::rayMarchEmission(const Scene &s1, const Ray &r)
@@ -217,7 +226,6 @@ namespace vol {
 		VolumeFloatPtr density = s->getScalarField();
 		
 	//	std::cout << density->eval(lux::Vector(0, 0, 0)) << std::endl;
-		//ClampColorFields* color = (ClampColorFields*)s->getColorField();
 		VolumeColorPtr color = s->getColorField();
 		//lux::Color c1 = color->eval(lux::Vector(0, 0, 0));
 	//	std::cout << "Color: " << c1[0] << ", " << c1[1] << ", " << c1[2]<< std::endl;
@@ -262,6 +270,10 @@ namespace vol {
 		std::unique_ptr<LightData> lData = std::make_unique<LightData>();
 		lData->kappa = kappa;
 		lData->lStepSize = lStepSize;
+
+		//Enable grided Deep Shadow Maps
+		lData->gridedDSM = gridedDSM;
+		lData->lGridSize = lGridSize; 
 
 		for (std::map<std::string, std::shared_ptr<obj::VolumeObject>>::iterator it = objs.begin(); it != objs.end(); ++it)
 		{
@@ -313,6 +325,9 @@ namespace vol {
 		//std::cout << "Rendering Image: "
 		//lux::Vector v = cam->evalDir(0, 0, 1024, 720);
 		//std::cout << "v: " << v.X() << ", " << v.Y() << ", " << v.Z() << std::endl;
+
+
+
 		float invSize = 1.0 / ((xRes*yRes));
 		for (int j = 0; j < yRes; j++)
 		{
@@ -325,7 +340,7 @@ namespace vol {
 				bool hit = box->intersect(v, nearDist, farDist);
 				if (hit)
 				{
-					//std::cout << "I HIT!" << std::endl;
+					
 					//c = rayMarchEmission(s1, v);
 					c = rayMarchLights(s1, v);
 				}

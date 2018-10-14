@@ -13,6 +13,9 @@ struct LightData {
 
 	float lStepSize = 0.1;
 	float lFarDist = 2.0;
+
+	bool gridedDSM = 1;
+	float lGridSize = 0.1;
 };
 
 

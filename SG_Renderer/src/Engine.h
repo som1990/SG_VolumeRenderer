@@ -23,11 +23,19 @@ namespace vol {
 		void render(lux::Color* exr, int frame);
 		AABBox* box = new AABBox(lux::Vector(0, 0, 0), lux::Vector(1, 1, 1));
 	private:
+		//Global Settings
 		int xRes=500, yRes=500;
-		float stepSize=0.01, kappa=50.0;
-		float lStepSize = 0.1;
-		float nearDist=2, farDist=10;
+		float nearDist = 2, farDist = 10;
 		int numFrames = 24;
+
+		//Volume Render Setting
+		float stepSize=0.01, kappa=50.0;
+
+		//Light Settings
+		float lStepSize = 0.1;
+		float lGridSize = 0.2;
+		bool gridedDSM = false;
+
 		lux::Color rayMarchEmission(const Scene &s1, const Ray &r);
 		lux::Color rayMarchLights(const Scene &s1, const Ray &r);
 		void generateImage(const Scene& s1, lux::Color* exr);
