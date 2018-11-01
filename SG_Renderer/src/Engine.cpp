@@ -187,6 +187,7 @@ namespace vol {
 
 		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(model, Cmodel, nullptr, nullptr);
 		s1.addObject("Body", o1);
+		
 	}
 
 	
@@ -285,10 +286,10 @@ namespace vol {
 			bool hit = s->getHit();
 			if (hit)
 			{
-				#pragma omp parallel for
+				#pragma omp parallel for num_threads(7)
 				for (int i = 0; i < steps; i++)
 				{
-			
+					
 					float val = density->eval(x);
 					
 					val = (val < 0) ? 0 : val;
@@ -329,11 +330,14 @@ namespace vol {
 
 
 		float invSize = 1.0 / ((xRes*yRes));
+		
 		for (int j = 0; j < yRes; j++)
 		{
+			float val;
 		#pragma omp parallel for
 			for (int i = 0; i < xRes; i++)
 			{
+				//std::cout << "threads: " << omp_get_num_threads() << std::endl;
 				lux::Color c(0.0,0.0,0.0,1.0);
 				int index = i + xRes*j;
 				Ray v = cam->getRay(i,j,xRes,yRes);				
@@ -345,10 +349,11 @@ namespace vol {
 					c = rayMarchLights(s1, v);
 				}
 				exr[index] = c;
-				float val = (round(index*invSize * 10000) / 100);
-				std::cout << "Rendering.... " << std::setprecision(2)<< std::fixed << val << "%" << '\r' <<  std::flush ;
+				val = (round(index*invSize * 10000) / 100);
+				
 				
 			}
+			std::cout << "Rendering.... " << std::setprecision(2) << std::fixed << val << "%" << '\r' << std::flush;
 		}
 		std::cout << std::endl;
 	}
@@ -357,6 +362,8 @@ namespace vol {
 	void Engine::render(lux::Color* exr, int frame) {
 		
 		Scene s1;
+		//omp_set_dynamic(0);
+		omp_set_num_threads(7);
 
 		float aspectRatio = 1.778;
 		box->setBounds(lux::Vector(-1.723, -1.763, 1.723), lux::Vector(1.723, 4.422, -1.723));

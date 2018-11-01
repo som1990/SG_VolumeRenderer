@@ -291,6 +291,7 @@ namespace vol {
 
 	inline const ScalarFieldAdd operator+ (VolumeField<float> &f, VolumeField<float> &g)
 	{
+
 		return ScalarFieldAdd(&f, &g);
 	}
 

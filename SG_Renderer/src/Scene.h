@@ -32,6 +32,7 @@ private:
 	std::map<std::string, std::shared_ptr<obj::VolumeObject>> objList;
 	std::map<std::string, std::shared_ptr<obj::Light>> lightList;
 	
+	
 };
 
 

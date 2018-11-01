@@ -14,7 +14,7 @@ public:
 	}
 	bool intersect(const Ray &, float nearDist, float farDist) const;
 	void setBounds(const lux::Vector &llc, const lux::Vector &urc);
-	const lux::Vector* getBounds() const { return bounds; }
+	const lux::Vector *getBounds() const { return bounds; }
 private:
 	lux::Vector bounds[2];
 };

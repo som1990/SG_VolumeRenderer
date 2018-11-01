@@ -2,7 +2,7 @@
 #define VolumeField_h__
 
 #include "luxMath.h"
-
+#include <memory.h>
 namespace vol {
 
 	template <typename U>

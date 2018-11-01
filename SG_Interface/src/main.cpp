@@ -6,8 +6,12 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <windows.h>
-
-
+#include <omp.h>
+/*
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+*/
 OIIO_NAMESPACE_USING
 
 
@@ -58,13 +62,14 @@ void writeOIIOImage(const char* fname, lux::Color* exr)
 	}
 	delete[] pixels;
 	std::cout << "FINISHED WRITING TO " << fname << std::endl;
+	out->destroy;
 }
 
 int main()
 {
 	using namespace std::chrono;
 	//vol::printMessage();
-	
+
 	vol::Engine e;
 	RenderSettings rend;
 	rend.iWidth = IWIDTH;
@@ -102,8 +107,6 @@ int main()
 	}
 
 	
-
-	
 	for (int f = rend.fBegin; f < (rend.fEnd + 1); f += rend.fInc)
 	{
 		auto start = high_resolution_clock::now();
@@ -122,8 +125,11 @@ int main()
 		std::cout << "Time Elapsed: " << int(timeTaken.count()/3600) << "hr: " << int(timeTaken.count()/60)%60 << "min: " << int (timeTaken.count())%60 << "sec" << std::endl;
 
 		delete[] exr;
+
 		
 	}
-
+	
 	std::cin.get();
+	//_CrtDumpMemoryLeaks();
+	return 0;
 }

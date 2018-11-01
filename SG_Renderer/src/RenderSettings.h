@@ -14,7 +14,7 @@ struct RenderSettings {
 	std::string fileName = "SG_Humanoid";
 	//Frames
 	int fBegin = 1;
-	int fEnd = 24;
+	int fEnd = 2;
 	int fInc = 1;
 
 	//Camera Settings
