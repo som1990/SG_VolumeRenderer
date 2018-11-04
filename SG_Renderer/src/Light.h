@@ -5,9 +5,11 @@
 #include "luxMath.h"
 #include "Ray.h"
 #include "LightData.h"
+#include "Grid.h"
 #include <omp.h>
 #include <memory>
 #include <iostream>
+
 
 namespace obj{
 	
@@ -15,47 +17,39 @@ namespace obj{
 	public:
 		Light(const lux::Vector &position,const lux::Color &light_color,const float &_intensity) :
 			pos(position), lCol(light_color), intensity(_intensity){}
-		virtual ~Light() {}
+		virtual ~Light() {
+		
+		}
 		const float getIntensity() const { return intensity; }
 		const lux::Color getColor() const { return lCol; }
 		virtual const Ray getlightRay(const lux::Vector &p) { 
 			lDir = (pos - p).unitvector();
 			return Ray(pos, lDir);
 		}
-		virtual lux::Vector const getNormal(const lux::Vector p) const { return normal;}
+		
 
-		virtual const lux::Color eval(std::unique_ptr<LightData> &lData) {
-			float lDist = (pos - lData->pos).magnitude();
-			lDir = (pos - lData->pos).unitvector();
-			lux::Vector x_L = lData->pos;
-
-			int steps = floor(lData->lFarDist / lData->lStepSize);
-			//std::cout << "stepsize: " << lData->lStepSize << std::endl;
-			float density = 0;
-			float DSM = 0;
-			#pragma omp parallel for
-			for (int i = 0; i < steps; i++) {
-				density = lData->volume->eval(x_L);
-				//std::cout << "density: " << density << std::endl;
-				density = (density < 0) ? 0 : density;
-				x_L += lData->lStepSize*lDir;
-				if (density != 0)
-				{
-					DSM += density*lData->lStepSize;
-				}
-				
-			}
+		virtual  const lux::Vector getNormal(const lux::Vector p) const { return normal;}
+		
+		void setDSMGrid(const lux::Vector &llc, const lux::Vector &urc, const float &gridSize)
+		{
+			//std::cout << "Generating grid class!" << std::endl;
+			grid = new DSMGrid(llc, urc, gridSize);
 			
-			float T_L = exp(-lData->kappa * DSM);
-
-			return (lCol * T_L);
 		}
+
+		void genDSMGrid(std::unique_ptr<LightData> &lData, const char* path);
+		virtual const lux::Color eval(std::unique_ptr<LightData> &lData); 
+		void readDSMGrid(const char* path)
+		{
+			grid->readMap(path);
+		}
+		void clearDSMGrid() { delete grid; }
 
 	protected:
 		lux::Vector lDir, pos, normal{};
 		lux::Color lCol;
-		float intensity;
-
+		DSMGrid* grid;
+		float intensity;	
 
 	};
 

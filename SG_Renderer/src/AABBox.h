@@ -12,6 +12,10 @@ public:
 		bounds[0] = llc;
 		bounds[1] = urc;
 	}
+	AABBox() {
+		bounds[0] = lux::Vector(0, 0, 0);
+		bounds[1] = lux::Vector(1, 1, 1);
+	}
 	bool intersect(const Ray &, float nearDist, float farDist) const;
 	void setBounds(const lux::Vector &llc, const lux::Vector &urc);
 	const lux::Vector *getBounds() const { return bounds; }
@@ -19,6 +23,5 @@ private:
 	lux::Vector bounds[2];
 };
 
-
-
 #endif // AABBox_h__
+

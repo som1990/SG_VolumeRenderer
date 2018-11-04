@@ -36,6 +36,7 @@ namespace vol {
 			ScalarFieldRotate* sRot = new ScalarFieldRotate(density, rotAngle);
 			ColorFieldRotate* cRot = new ColorFieldRotate(color, rotAngle);
 
+			o.second->updateObject(sRot, cRot, nullptr, nullptr);
 		}
 	}
 
@@ -196,6 +197,7 @@ namespace vol {
 		//Global Settings
 		xRes = rend.iWidth;
 		yRes = rend.iHeight;
+		fStart = rend.fBegin;
 		numFrames = rend.fEnd - rend.fBegin;
 
 
@@ -207,10 +209,13 @@ namespace vol {
 		lStepSize = rend.lStepSize;
 		gridedDSM = rend.gridedDSM;
 		lGridSize = rend.lGridSize;
+		mapData = rend.mapDir;
+		animated_lights = rend.animated_Lights;
 
 		//Camera Settings
 		nearDist = rend.nearDist;
 		farDist = rend.farDist;
+
 		
 	}
 
@@ -275,8 +280,9 @@ namespace vol {
 		//Enable grided Deep Shadow Maps
 		lData->gridedDSM = gridedDSM;
 		lData->lGridSize = lGridSize; 
+		
 
-		for (std::map<std::string, std::shared_ptr<obj::VolumeObject>>::iterator it = objs.begin(); it != objs.end(); ++it)
+		for (VolObjListMap::iterator it = objs.begin(); it != objs.end(); ++it)
 		{
 			lux::Vector x = r.getOrigin() + r.getDir()*nearDist;
 			std::shared_ptr<obj::VolumeObject> s = it->second;
@@ -286,7 +292,7 @@ namespace vol {
 			bool hit = s->getHit();
 			if (hit)
 			{
-				#pragma omp parallel for num_threads(7)
+				#pragma omp parallel
 				for (int i = 0; i < steps; i++)
 				{
 					
@@ -303,6 +309,8 @@ namespace vol {
 						for (std::map<std::string, std::shared_ptr<obj::Light>>::iterator it2 = lights.begin(); it2 != lights.end(); ++it2)
 						{
 							std::shared_ptr<obj::Light> l = it2->second;
+							std::string  path = mapData + "/DSM_" + it->first + "_" + it2->first + ".bin";
+							lData->DSMMap = path.c_str();
 							col_s += l->eval(lData) * col_v->eval(x) * phase;//phase=1.0
 						}
 
@@ -320,6 +328,80 @@ namespace vol {
 
 	}
 
+	void Engine::genDSM(const Scene& s1, int frame)
+	{
+		auto objs = s1.getObjList();
+		auto lights = s1.getLights();
+		std::unique_ptr<LightData> lData = std::make_unique<LightData>();
+		lData->kappa = kappa;
+		lData->lStepSize = lStepSize;
+
+		//Enable grided Deep Shadow Maps
+		lData->gridedDSM = gridedDSM;
+		lData->lGridSize = lGridSize;
+		for (VolObjListMap::iterator it = objs.begin(); it != objs.end(); ++it)
+		{
+			std::string objName = it->first;
+			std::shared_ptr<obj::VolumeObject> s = it->second;
+			VolumeFloatPtr density = s->getScalarField();
+			lData->volume = density;
+
+			for (std::map<std::string, std::shared_ptr<obj::Light>>::iterator it2 = lights.begin(); it2 != lights.end(); ++it2)
+			{
+				std::shared_ptr<obj::Light> l = it2->second;
+				std::string lName = it2->first;
+				std::string  path = std::string(mapData) + "/DSM_" + objName + "_" + lName + ".bin";
+
+				lData->DSMMap = path.c_str();
+				l->setDSMGrid(lux::Vector(-1.723, -1.763, -1.723), lux::Vector(1.723, 4.422, 1.723), lGridSize);
+
+				l->genDSMGrid(lData, path.c_str());
+				std::cout << "Finish generating Map at: " << path << std::endl;
+				l->clearDSMGrid();
+			}
+		}
+
+	}
+
+	void Engine::readDSM(const Scene& s1, int frameNum)
+	{
+		auto objs = s1.getObjList();
+		auto lights = s1.getLights();
+		std::unique_ptr<LightData> lData = std::make_unique<LightData>();
+		lData->kappa = kappa;
+		lData->lStepSize = lStepSize;
+
+		//Enable grided Deep Shadow Maps
+		lData->gridedDSM = gridedDSM;
+		lData->lGridSize = lGridSize;
+
+		for (VolObjListMap::iterator it = objs.begin(); it != objs.end(); ++it)
+		{
+			std::string objName = it->first;
+			std::shared_ptr<obj::VolumeObject> s = it->second;
+			VolumeFloatPtr density = s->getScalarField();
+			lData->volume = density;
+
+			for (std::map<std::string, std::shared_ptr<obj::Light>>::iterator it2 = lights.begin(); it2 != lights.end(); ++it2)
+			{
+				std::shared_ptr<obj::Light> l = it2->second;
+				std::string lName = it2->first;
+				std::string  path = std::string(mapData) + "/DSM_" + objName + "_" + lName + ".bin";
+
+				lData->DSMMap = path.c_str();
+				//l->setDSMGrid(lux::Vector(-1.723, -1.763, 1.723), lux::Vector(1.723, 4.422, -1.723), lGridSize);
+				//std::cout << "I'm on frame " << frameNum << std::endl;
+				std::cout << objName << "_" << lName << " Light Map" << std::endl;
+				l->setDSMGrid(lux::Vector(-1.723, -1.763, -1.723), lux::Vector(1.723, 4.422, 1.723), lGridSize);
+				l->readDSMGrid(path.c_str());
+
+				std::cout << "Finish Reading Map at: " << path << std::endl;
+			}
+		}
+
+
+	}
+
 	void Engine::generateImage(const Scene& s1, lux::Color* exr)
 	{
 		std::shared_ptr<obj::Camera> cam = s1.getCam();
@@ -334,11 +416,11 @@ namespace vol {
 		for (int j = 0; j < yRes; j++)
 		{
 			float val;
-		#pragma omp parallel for
+			#pragma omp parallel for
 			for (int i = 0; i < xRes; i++)
 			{
 				//std::cout << "threads: " << omp_get_num_threads() << std::endl;
-				lux::Color c(0.0,0.0,0.0,1.0);
+				lux::Color c(0.0,0.0,0.0,0.0);
 				int index = i + xRes*j;
 				Ray v = cam->getRay(i,j,xRes,yRes);				
 				bool hit = box->intersect(v, nearDist, farDist);
@@ -359,18 +441,34 @@ namespace vol {
 	}
 
 
-	void Engine::render(lux::Color* exr, int frame) {
-		
+	void Engine::render(lux::Color* exr, int frame) 
+	{
+
 		Scene s1;
 		//omp_set_dynamic(0);
 		omp_set_num_threads(7);
 
 		float aspectRatio = 1.778;
+	
 		box->setBounds(lux::Vector(-1.723, -1.763, 1.723), lux::Vector(1.723, 4.422, -1.723));
 		s1.createCam(lux::Vector(0.058, 3.004, 6.675), lux::Vector(0.007, -0.146, -0.989), lux::Vector(0.001, 0.989, -0.146), 54.00f, aspectRatio);
 		testScene2(s1, numFrames, frame);
+		if (frame == fStart && !animated_lights && gridedDSM)
+		{
+			std::cout << "Generating Deep Shadow Maps" << std::endl;
+			genDSM(s1,frame);
+			std::cout << "Finished Generating DSM" << std::endl;
+		}
+
+		if (gridedDSM)
+		{
+			readDSM(s1, frame);	
+		}
+
 		//updateScene(s1,f);
 		generateImage(s1, exr);
 	}
+
+
 
 }

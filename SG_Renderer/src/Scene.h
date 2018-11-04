@@ -35,5 +35,6 @@ private:
 	
 };
 
-
+typedef std::map<std::string, std::shared_ptr<obj::Light>> LightListMap;
+typedef std::map<std::string, std::shared_ptr<obj::VolumeObject>> VolObjListMap;
 #endif // Scene_h__

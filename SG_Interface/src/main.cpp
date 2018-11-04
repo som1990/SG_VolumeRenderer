@@ -6,7 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <windows.h>
-#include <omp.h>
+
 /*
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -18,7 +18,7 @@ OIIO_NAMESPACE_USING
 #define IWIDTH 480  //480
 #define IHEIGHT 270 //270
 
-namespace fs = boost::filesystem;
+
 
 static std::string getexepath()
 {
@@ -67,14 +67,15 @@ void writeOIIOImage(const char* fname, lux::Color* exr)
 
 int main()
 {
+	namespace fs = boost::filesystem;
 	using namespace std::chrono;
 	//vol::printMessage();
 
-	vol::Engine e;
 	RenderSettings rend;
 	rend.iWidth = IWIDTH;
 	rend.iHeight = IHEIGHT;
-	e.setRenderSettings(rend);
+	vol::Engine e;
+	
 
 	fs::path p1 = getexepath();
 	p1 = p1.parent_path();
@@ -105,7 +106,7 @@ int main()
 		std::cout << "No valid path for directory to save data" << std::endl;
 			return 0;
 	}
-
+	e.setRenderSettings(rend);
 	
 	for (int f = rend.fBegin; f < (rend.fEnd + 1); f += rend.fInc)
 	{

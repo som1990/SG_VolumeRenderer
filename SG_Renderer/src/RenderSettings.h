@@ -31,10 +31,11 @@ struct RenderSettings {
 	//DSM Attributes
 	float lStepSize = 0.1;
 	float phase = 1.0f;
-	bool gridedDSM = 1;
+	bool gridedDSM = true;
+	bool animated_Lights = false;
 	
 	//Grid Attributes
-	float lGridSize = 0.1;
+	float lGridSize = 0.01;
 	
 
 };

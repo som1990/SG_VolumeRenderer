@@ -21,11 +21,14 @@ namespace vol {
 		Engine() {}
 		void setRenderSettings(const RenderSettings& rend);
 		void render(lux::Color* exr, int frame);
+		void genDSM(const Scene &s1, int frameNum);
+		void readDSM(const Scene& s1, int frameNum);
 		AABBox* box = new AABBox(lux::Vector(0, 0, 0), lux::Vector(1, 1, 1));
 	private:
 		//Global Settings
 		int xRes=500, yRes=500;
 		float nearDist = 2, farDist = 10;
+		int fStart = 1;
 		int numFrames = 24;
 
 		//Volume Render Setting
@@ -35,6 +38,8 @@ namespace vol {
 		float lStepSize = 0.1;
 		float lGridSize = 0.2;
 		bool gridedDSM = false;
+		std::string mapData = "";
+		bool animated_lights = false;
 
 		lux::Color rayMarchEmission(const Scene &s1, const Ray &r);
 		lux::Color rayMarchLights(const Scene &s1, const Ray &r);
