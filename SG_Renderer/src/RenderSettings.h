@@ -11,10 +11,10 @@ struct RenderSettings {
 	//File I/O
 	std::string mapDir = "";
 	std::string renderDir = "";
-	std::string fileName = "SG_Humanoid";
+	std::string fileName = "Test";
 	//Frames
 	int fBegin = 1;
-	int fEnd = 2;
+	int fEnd = 1;
 	int fInc = 1;
 
 	//Camera Settings

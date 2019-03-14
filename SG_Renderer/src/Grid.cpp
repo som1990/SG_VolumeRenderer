@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include "ParallelStream.h"
 #include <fstream>
 
 DSMGrid::DSMGrid(const char* path)
@@ -10,13 +11,15 @@ DSMGrid::DSMGrid(const char* path)
 	ifile.read(reinterpret_cast<char *>(&_urc), sizeof(lux::Vector));
 	urc = _urc;
 	llc = _llc;
+	//std::cout << "I've reached ReadMap" << std::endl;
+	size_t nx, ny, nz;
+	ifile.read(reinterpret_cast<char*>(&nx), sizeof(size_t));
+	ifile.read(reinterpret_cast<char*>(&ny), sizeof(size_t));
+	ifile.read(reinterpret_cast<char*>(&nz), sizeof(size_t));
 
-	unsigned nx, ny, nz;
-	ifile.read(reinterpret_cast<char*>(&nx), sizeof(unsigned));
-	ifile.read(reinterpret_cast<char*>(&ny), sizeof(unsigned));
-	ifile.read(reinterpret_cast<char*>(&nz), sizeof(unsigned));
-	unsigned vSize = nx * ny * nz;
-	data.resize(vSize, 0.0);
+	size_t vSize = nx * ny * nz;
+	std::cout << (ParallelStream() << "Reading nx, ny, nz:  " << nx << ", " << ny << ", " << nz).toString() << std::endl;
+	data.resize(vSize * sizeof(float));
 	xSize = nx;
 	ySize = ny;
 	zSize = nz;
@@ -40,20 +43,22 @@ void DSMGrid::generateMap(const char* path)
 {
 	std::ofstream  ofile(path, std::ios_base::binary);
 
-	unsigned nx = xSize;
-	unsigned ny = ySize;
-	unsigned nz = zSize;
+	size_t nx = xSize;
+	size_t ny = ySize;
+	size_t nz = zSize;
 	float gLen = gridLength;
+	size_t size = nx * ny * nz;
 	lux::Vector _llc, _urc;
 	_llc = llc;
 	_urc = urc;
+	std::cout << (ParallelStream() << "Writing nx, ny, nz:  " << nx << ", " << ny << ", " << nz ).toString() << std::endl;
 	ofile.write(reinterpret_cast<char *>(&_llc), sizeof(lux::Vector));
 	ofile.write(reinterpret_cast<char *>(&_urc), sizeof(lux::Vector));
-	ofile.write(reinterpret_cast<char *>(&nx), sizeof(unsigned));
-	ofile.write(reinterpret_cast<char *>(&ny), sizeof(unsigned));
-	ofile.write(reinterpret_cast<char *>(&nz), sizeof(unsigned));
+	ofile.write(reinterpret_cast<char *>(&nx), sizeof(size_t));
+	ofile.write(reinterpret_cast<char *>(&ny), sizeof(size_t));
+	ofile.write(reinterpret_cast<char *>(&nz), sizeof(size_t));
 	ofile.write(reinterpret_cast<char *>(&gLen), sizeof(float));
-	ofile.write(reinterpret_cast<char *>(&data[0]), nx*ny*nz*sizeof(float));
+	ofile.write(reinterpret_cast<char *>(&data[0]), size * sizeof(float));
 	/*for (int i = 0; i < xSize; i++)
 	{
 		for (int j = 0; j < ySize; j++)
@@ -83,12 +88,14 @@ void DSMGrid::readMap(const char* path)
 	urc = _urc;
 	llc = _llc;
 	//std::cout << "I've reached ReadMap" << std::endl;
-	unsigned nx,ny,nz;
-	ifile.read(reinterpret_cast<char*>(&nx), sizeof(unsigned));
-	ifile.read(reinterpret_cast<char*>(&ny), sizeof(unsigned));
-	ifile.read(reinterpret_cast<char*>(&nz), sizeof(unsigned));
-	unsigned vSize = nx * ny * nz;
-	data.reserve(nx*ny*nz);
+	size_t nx,ny,nz;
+	ifile.read(reinterpret_cast<char*>(&nx), sizeof(size_t));
+	ifile.read(reinterpret_cast<char*>(&ny), sizeof(size_t));
+	ifile.read(reinterpret_cast<char*>(&nz), sizeof(size_t));
+
+	size_t vSize = nx * ny * nz;
+	std::cout << (ParallelStream() << "Reading nx, ny, nz:  " << nx << ", " << ny << ", " << nz).toString() << std::endl;
+	data.resize(vSize*sizeof(float));
 	xSize = nx;
 	ySize = ny;
 	zSize = nz;
@@ -97,14 +104,18 @@ void DSMGrid::readMap(const char* path)
 	gridLength = gLen;
 	if (vSize != 0)
 	{
-		ifile.read(reinterpret_cast<char*>(&data[0]), nx*ny*nz * sizeof(float));
+		ifile.read(reinterpret_cast<char*>(&data[0]), vSize * sizeof(float));
 	}
 	ifile.close();
+	std::cout << "Read DSM GridLen: " << gridLength << std::endl;
 }
 
 const float DSMGrid::getGridData(const int &i, const int &j, const int &k) const
 {
 	int index = i + xSize * (j + ySize * k);
+
+	//std::cout << (ParallelStream() << "\n Index: " << index << " i, j, k : " << i << ", " << j << ", " << k ).toString() << std::endl;
+	//std::cout << (ParallelStream() << "\n dataSize: " << data.size()).toString() << std::endl;
 	return data[index];
 }
 
@@ -116,10 +127,11 @@ float DSMGrid::trilinearInterp(const lux::Vector &p)
 	int y0 = int(gPos.Y() / gridLength);
 	int z0 = int(gPos.Z() / gridLength);
 
-	//if (x0 < 0 || y0 < 0 || z0 < 0)
-		//return 0;
-//	std::cout << "p: " << p.X() << ", " << p.Y() << ", " << p.Z() << std::endl;
-//	std::cout << "x0,y0,z0: " << x0 << " , " << y0 << " , " << z0 << std::endl;
+	if (x0 < 0 || y0 < 0 || z0 < 0)
+		return 0;
+//	std::cout << (ParallelStream() << "\n p: " << p.X() << ", " << p.Y() << ", " << p.Z()).toString() << std::endl;
+
+//	std::cout << (ParallelStream() << "\n x0,y0,z0: " << x0 << " , " << y0 << " , " << z0).toString() << std::endl;
 	int x1 = x0 + 1; int y1 = y0 + 1; int z1 = z0 + 1;
 	x1 = (x1 < (xSize - 1)) ? x1 : (xSize - 1);
 	y1 = (y1 < (ySize - 1)) ? y1 : (ySize - 1);
@@ -129,7 +141,7 @@ float DSMGrid::trilinearInterp(const lux::Vector &p)
 	float y_d = (gPos.Y()/gridLength) - y0;
 	float z_d = (gPos.Z()/gridLength) - z0;
 
-//	std::cout << "x_d,y_d,z_d: " << x_d << ", " << y_d << ", " << z_d << std::endl;
+//	std::cout << (ParallelStream() << "\n x_d,y_d,z_d: " << x_d << ", " << y_d << ", " << z_d).toString() << std::endl;
 
 	float c000 = getGridData(x0, y0, z0);
 	float c100 = getGridData(x1, y0, z0);

@@ -1,5 +1,6 @@
 #include "Light.h"
 #include <iomanip>
+#include "ParallelStream.h"
 
 void obj::Light::genDSMGrid(std::unique_ptr<LightData> &lData, const char* path)
 {
@@ -8,6 +9,7 @@ void obj::Light::genDSMGrid(std::unique_ptr<LightData> &lData, const char* path)
 	lux::Vector gridSign = grid->getSign();
 	std::vector<lux::Vector> bounds = grid->getbounds();
 	std::cout << "Grid Dimensions: " << dims.X() << ", " << dims.Y() << ", " << dims.Z() << std::endl;
+	std::cout << "Grid Length: " << grid->getGridLength() << std::endl;
 	lux::Vector x_L;
 	float val = 0;
 	float invSize = 1 / (dims.X()*dims.Y()*dims.Z());
@@ -15,7 +17,7 @@ void obj::Light::genDSMGrid(std::unique_ptr<LightData> &lData, const char* path)
 	{
 		for (int j = 0; j < int(dims.Y()); j++)
 		{
-			//#pragma omp parallel for
+			#pragma omp parallel for
 			for (int i = 0; i < int(dims.X()); i++)
 			{
 				x_L = bounds[0] + lux::Vector(i*gridSign.X(), j*gridSign.Y(), k*gridSign.Z())*grid->getGridLength();
@@ -49,6 +51,8 @@ void obj::Light::genDSMGrid(std::unique_ptr<LightData> &lData, const char* path)
 		}
 		
 	}
+
+
 	std::cout << "Map Calculated" << std::endl;
 	std::cout << "Writing Map to " << path << std::endl;
 	grid->generateMap(path);
@@ -62,7 +66,7 @@ const lux::Color obj::Light::eval(std::unique_ptr<LightData> &lData)
 	lux::Vector x_L = lData->pos;
 
 	int steps = floor(lData->lFarDist / lData->lStepSize);
-	//std::cout << "stepsize: " << lData->lStepSize << std::endl;
+	//std::cout << (ParallelStream() << "stepsize: " << lData->lStepSize).toString() << std::endl;
 	float density = 0;
 	float DSM = 0;
 	float gDSM = 0;

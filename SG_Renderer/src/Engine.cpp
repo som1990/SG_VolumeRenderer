@@ -6,6 +6,7 @@
 #include <cmath>
 #include <omp.h>
 #include <iomanip>
+#include "ParallelStream.h"
 
 #define PI 3.14159265359
 
@@ -51,6 +52,9 @@ namespace vol {
 
 		float angle = (360.0 / nFrames) * float(frame) * (PI / 180.0);
 		lux::Vector rotAngle(0, angle, 0);
+	//	std::cout << "angle: " << angle << std::endl;
+	//	std::cout << "numFrames: " << nFrames << std::endl;
+	//	std::cout << "frame: " << frame << std::endl;
 		ScalarFieldRotate* sRot = new ScalarFieldRotate(S, rotAngle);
 		ColorFieldRotate* cRot = new ColorFieldRotate(sC, rotAngle);
 
@@ -64,7 +68,7 @@ namespace vol {
 	}
 
 	
-	void testScene(Scene &s1){
+	void testScene(Scene &s1, int nFrames, int frame){
 		lux::Color *c_body = new lux::Color(0.600, 0.816, 0.894, 1.0);
 		lux::Color *c_eyes = new lux::Color(0.373, 0.075, 0.216, 1.0);
 		lux::Color *c_feet = new lux::Color(0.996, 0.855, 0.235,1.0);
@@ -185,10 +189,13 @@ namespace vol {
 		ColorFieldRotate* cRot = new ColorFieldRotate(Cfig4, rotAngle);
 		
 		//VolumeFloatPtr fig2 = new ScalarFieldScale(fig, 2);
+		std::shared_ptr<obj::Light> l1 = std::make_shared<obj::Light>(lux::Vector(5, 5, 5), lux::Color(0.0, 0.5, 0, 1.0), 1.0);
+		std::shared_ptr<obj::Light> l2 = std::make_shared<obj::Light>(lux::Vector(-5, 5, 5), lux::Color(0.2, 0.0, 0, 1.0), 1.0);
 
 		std::shared_ptr<obj::VolumeObject> o1 = std::make_shared<obj::VolumeObject>(model, Cmodel, nullptr, nullptr);
 		s1.addObject("Body", o1);
-		
+		s1.addLight("Key", l1);
+		s1.addLight("Fill", l2);
 	}
 
 	
@@ -198,7 +205,7 @@ namespace vol {
 		xRes = rend.iWidth;
 		yRes = rend.iHeight;
 		fStart = rend.fBegin;
-		numFrames = rend.fEnd - rend.fBegin;
+		numFrames = 1 + rend.fEnd - rend.fBegin;
 
 
 		//Volume Renderer Settings
@@ -231,9 +238,9 @@ namespace vol {
 		
 		VolumeFloatPtr density = s->getScalarField();
 		
-	//	std::cout << density->eval(lux::Vector(0, 0, 0)) << std::endl;
+	//	std::cout << density->eval(lux::Vector(0, 2.0, 0)) << std::endl;
 		VolumeColorPtr color = s->getColorField();
-		//lux::Color c1 = color->eval(lux::Vector(0, 0, 0));
+	//	lux::Color c1 = color->eval(lux::Vector(0, 0, 0));
 	//	std::cout << "Color: " << c1[0] << ", " << c1[1] << ", " << c1[2]<< std::endl;
 		float T = 1;
 		lux::Color L(0,0,0,1.0);
@@ -249,6 +256,7 @@ namespace vol {
 			
 			if (val != 0)
 			{
+				//std::cout << (ParallelStream() << "\nVal: " << val << "\nx,y,z: " << x.X() << ", " << x.Y() << ", " << x.Z()).toString() << std::endl;
 				float dT = std::exp(-kappa*stepSize*val);
 				L += color->eval(x) * (1 - dT)*T;
 				//std::cout << "BuildColor: " << L[0] << ", " << L[1] << ", " << L[2] << std::endl;
@@ -308,6 +316,7 @@ namespace vol {
 						lux::Color col_s(0, 0, 0, 1.0);
 						for (std::map<std::string, std::shared_ptr<obj::Light>>::iterator it2 = lights.begin(); it2 != lights.end(); ++it2)
 						{
+							//std::cout << "Hello I've made it here" << std::endl;
 							std::shared_ptr<obj::Light> l = it2->second;
 							std::string  path = mapData + "/DSM_" + it->first + "_" + it2->first + ".bin";
 							lData->DSMMap = path.c_str();
@@ -405,7 +414,7 @@ namespace vol {
 	void Engine::generateImage(const Scene& s1, lux::Color* exr)
 	{
 		std::shared_ptr<obj::Camera> cam = s1.getCam();
-		//std::cout << "Rendering Image: "
+		std::cout << "Rendering Image: " << std::endl;
 		//lux::Vector v = cam->evalDir(0, 0, 1024, 720);
 		//std::cout << "v: " << v.X() << ", " << v.Y() << ", " << v.Z() << std::endl;
 
@@ -424,9 +433,10 @@ namespace vol {
 				int index = i + xRes*j;
 				Ray v = cam->getRay(i,j,xRes,yRes);				
 				bool hit = box->intersect(v, nearDist, farDist);
+				//bool hit = true; //Test Purposes
 				if (hit)
 				{
-					
+					//std::cout << (ParallelStream() << "\nHit!").toString() << std::endl;
 					//c = rayMarchEmission(s1, v);
 					c = rayMarchLights(s1, v);
 				}
@@ -441,7 +451,7 @@ namespace vol {
 	}
 
 
-	void Engine::render(lux::Color* exr, int frame) 
+	void Engine::render(lux::Color* exr, int frame)
 	{
 
 		Scene s1;
@@ -449,7 +459,10 @@ namespace vol {
 		omp_set_num_threads(7);
 
 		float aspectRatio = 1.778;
-	
+		if (numFrames <= 0) {
+			std::cout << "Number of frames specified 0. Exiting Program" << std::endl;
+			return;
+		}
 		box->setBounds(lux::Vector(-1.723, -1.763, 1.723), lux::Vector(1.723, 4.422, -1.723));
 		s1.createCam(lux::Vector(0.058, 3.004, 6.675), lux::Vector(0.007, -0.146, -0.989), lux::Vector(0.001, 0.989, -0.146), 54.00f, aspectRatio);
 		testScene2(s1, numFrames, frame);
@@ -465,7 +478,8 @@ namespace vol {
 			readDSM(s1, frame);	
 		}
 
-		//updateScene(s1,f);
+		//updateScene(s1,numFrames,frame);
+//		std::cout << "Rendering Image" << std::endl;
 		generateImage(s1, exr);
 	}
 
